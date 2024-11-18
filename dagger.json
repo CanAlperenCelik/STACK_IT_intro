@@ -1,0 +1,6 @@
+{
+  "name": "STACK_IT_intro",
+  "engineVersion": "v0.13.7",
+  "sdk": "typescript",
+  "source": "dagger"
+}
