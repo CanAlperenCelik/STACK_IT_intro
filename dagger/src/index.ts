@@ -24,27 +24,6 @@ import {
 
 @object()
 export class StackItIntro {
-  /**
-   * Returns a container that echoes whatever string argument is provided
-   */
-  @func()
-  containerEcho(stringArg: string): Container {
-    return dag.container().from("alpine:latest").withExec(["echo", stringArg]);
-  }
-
-  /**
-   * Returns lines that match a pattern in the files of the provided Directory
-   */
-  @func()
-  async grepDir(directoryArg: Directory, pattern: string): Promise<string> {
-    return dag
-      .container()
-      .from("alpine:latest")
-      .withMountedDirectory("/mnt", directoryArg)
-      .withWorkdir("/mnt")
-      .withExec(["grep", "-R", pattern, "."])
-      .stdout();
-  }
   @func()
   buildEnv(source: Directory): Container {
     // create a Dagger cache volume for dependencies
@@ -62,6 +41,7 @@ export class StackItIntro {
         .withExec(["npm", "install"])
     );
   }
+
   @func()
   build(source: Directory): Container {
     // get the build environment container
@@ -82,8 +62,14 @@ export class StackItIntro {
         .withExposedPort(80)
     );
   }
+
   @func()
   async test(source: Directory): Promise<Service> {
     return this.build(source).asService();
+  }
+
+  @func()
+  async publish(source: Directory, address: string): Promise<string> {
+    return this.build(source).publish(address);
   }
 }
